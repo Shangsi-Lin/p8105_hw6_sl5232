@@ -4,7 +4,7 @@ author: "Shangsi Lin"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-
+## Homework 6
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
@@ -87,3 +87,24 @@ weather_df %>%
 As with $r^2$, this distribution is somewhat skewed and has some outliers. 
 
 The point of this is not to say you should always use the bootstrap -- it's possible to establish "large sample" distributions for strange parameters / values / summaries in a lot of cases, and those are great to have. But it is helpful to know that there's a way to do inference even in tough cases. 
+
+### Problem 2
+Download the interested data from github and store it in the data file. Then create a `city_state` variable and a binary variable indicating whether the homicide is solved. Omit cities that don't report victim race and Tulsa, AL, which is a data entry mistake. Due to our interest, limit the analysis on `victim_race` is white or black. Set `victim_age` to be numeric.
+
+```{r}
+homicide_df = read_csv("data/homicide-data.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(city_state = str_c(city, ", ", state)) %>% 
+  mutate(solved = as.numeric(disposition == "Closed by arrest")) %>% 
+  filter(city_state != "Dallas, TX", city_state != "Phoenix, AZ", city_state != "Kansas City, MO", city_state != "Tulsa, AL") %>% 
+  filter(victim_race == "White" | victim_race == "Black") %>% 
+  filter(victim_age != "Unknown") %>% 
+  mutate(victim_age = as.numeric(victim_age))
+```
+
+Use the `glm` function to fit a logistic regression with resolved vs unresolved as the outcome and victim age, sex, and race as predictors. Save the output of `glm` as an R object and  apply `broom::tidy` to this object. Obtain the estimate and confidence interval of the adjusted odds ratio for solving homicides comparing male victims to female victims keeping all other variables fixed. 
+
+```{r}
+
+```
+
