@@ -148,3 +148,18 @@ ORCI_cities %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+From the produced plot we can see that New York has the lowest male vs. female victim adjusted odds ratio estimate for solved homicides, which is about 0.25, while Albuquerque has the highest odds ratio estimate at about 1.75. It is also worth to note that among the 47 cities included in this plot, most cities has an odds ratio between 0.25 to 1. While the only three cities with odds ratio significantly above 1 also has significantly larger confidence intervals.
+
+### Problem 3
+
+This problem investigates on the effects of several variables on a child's birthweight. First load and clean the data for regression analysis.
+
+```{r}
+birthweight = read_csv("data/birthweight.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(babysex = recode(babysex, `1` = "Male", `2` = "Female"),
+         frace = recode(frace, `1` = "White", `2` = "Black", `3` = "Asian", `4` = "Puerto Rican", `8` = "Other", `9` = "Unknown"),
+         mrace = recode(mrace, `1` = "White", `2` = "Black", `3` = "Asian", `4` = "Puerto Rican", `8` = "Other")) %>% 
+  drop_na()
+```
+
