@@ -183,7 +183,7 @@ birthweight %>%
   labs(title = "Model Residuals against Fitted Values", ) + xlab("fitted value") + ylab("residual")
 ```
 
-Next, Build two models and compare them with my model. One model uses length at birth and gestational age as predictors, while the other one uses head circumference, length, sex, and all interactions. Make this comparison in terms of the cross-validated prediction error, shown here by .
+Next, Build two models and compare them with my model. One model uses length at birth and gestational age as predictors, while the other one uses head circumference, length, sex, and all interactions. Make this comparison in terms of the cross-validated prediction error, the indication for model fitness here is rmse, the root mean squared error.
 
 ```{r}
 result = crossv_mc(birthweight, 100) %>% 
