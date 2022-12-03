@@ -163,3 +163,47 @@ birthweight = read_csv("data/birthweight.csv") %>%
   drop_na()
 ```
 
+I decide to build my model using the backward selection method, which means that I will start with a model that considers all factors as predictors, and then by backward selection, insignificant predictors will be removed to result in the final model.
+
+```{r}
+my_model = lm(bwt ~., data = birthweight) %>% 
+  MASS::stepAIC(direction = "backward")
+summary(my_model)
+```
+
+By reading the r results above, we can conclude from the relatively high r squared value that most of the variances are being explained by this model. Then, show a plot of model residuals against fitted values using `add_predictions` and `add_residuals`.
+
+```{r}
+birthweight %>% 
+  add_predictions(my_model) %>% 
+  add_residuals(my_model) %>% 
+  ggplot(aes(x = pred, y = resid)) + 
+  geom_point() + 
+  geom_smooth()+
+  labs(title = "Model Residuals against Fitted Values", ) + xlab("fitted value") + ylab("residual")
+```
+
+Next, Build two models and compare them with my model. One model uses length at birth and gestational age as predictors, while the other one uses head circumference, length, sex, and all interactions. Make this comparison in terms of the cross-validated prediction error, shown here by .
+
+```{r}
+result = crossv_mc(birthweight, 100) %>% 
+  mutate(train = map(train, as_tibble), test = map(test, as_tibble)) %>% 
+  mutate(
+    my_model  = map(train, ~lm( bwt ~ babysex + bhead + blength + delwt + fincome + 
+    gaweeks + mheight + mrace + parity + ppwt + smoken, data = .x)),
+    model_one   = map(train, ~lm(bwt ~ gaweeks + blength, data = .x)),
+    model_two  = map(train, ~lm(bwt ~ bhead*blength*babysex, data = .x))) %>% 
+  mutate(
+    rmse_my_model = map2_dbl(my_model, test, ~rmse(model = .x, data = .y)),
+    rmse_one    = map2_dbl(model_one, test, ~rmse(model = .x, data = .y)),
+    rmse_two = map2_dbl(model_two, test, ~rmse(model = .x, data = .y))) %>% 
+  summarize(
+    my_model_mean = mean(rmse_my_model),
+    model_one_mean = mean(rmse_one),
+    model_two_meam = mean(rmse_two)
+  )
+
+result
+```
+
+As we can see from the resulted summary table, my model has the lowest overall root mean squared error, indicating that this is the best model among the three models. 
